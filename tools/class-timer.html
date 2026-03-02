@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Timer - Remote Education Toolkit</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .timer-container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; color: #a78bfa; }
+        .subtitle { font-size: 14px; color: #64748b; margin-bottom: 32px; }
+        .mode-toggle {
+            display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;
+        }
+        .mode-btn {
+            padding: 8px 20px; border: 2px solid #334155; border-radius: 20px;
+            background: transparent; color: #94a3b8; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .mode-btn.active { border-color: #a78bfa; color: #a78bfa; background: rgba(167,139,250,0.1); }
+        .mode-btn:hover { border-color: #a78bfa; }
+        .time-input-group {
+            display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 32px;
+        }
+        .time-input-group label { font-size: 14px; color: #94a3b8; }
+        .time-input-group input {
+            width: 80px; padding: 10px 12px; text-align: center; font-size: 18px; font-weight: 700;
+            background: #1e293b; border: 2px solid #334155; border-radius: 8px; color: #e2e8f0;
+            outline: none; transition: border-color 0.2s;
+        }
+        .time-input-group input:focus { border-color: #a78bfa; }
+        .display {
+            font-size: 120px; font-weight: 800; font-variant-numeric: tabular-nums;
+            letter-spacing: 4px; margin-bottom: 24px; color: #f1f5f9;
+            text-shadow: 0 0 40px rgba(167,139,250,0.3);
+            transition: color 0.3s;
+        }
+        .display.warning { color: #fbbf24; text-shadow: 0 0 40px rgba(251,191,36,0.3); }
+        .display.danger { color: #ef4444; text-shadow: 0 0 40px rgba(239,68,68,0.4); animation: pulse 1s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .progress-bar-container {
+            width: 100%; height: 8px; background: #1e293b; border-radius: 4px;
+            margin-bottom: 32px; overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%; background: linear-gradient(90deg, #a78bfa, #667eea);
+            border-radius: 4px; transition: width 0.5s linear;
+            width: 100%;
+        }
+        .progress-bar.warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .progress-bar.danger { background: linear-gradient(90deg, #dc2626, #ef4444); }
+        .controls { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+        .btn {
+            padding: 14px 36px; border: none; border-radius: 10px; font-size: 16px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+        }
+        .btn-start { background: #22c55e; color: #fff; }
+        .btn-start:hover { background: #16a34a; }
+        .btn-stop { background: #ef4444; color: #fff; }
+        .btn-stop:hover { background: #dc2626; }
+        .btn-reset { background: #334155; color: #94a3b8; }
+        .btn-reset:hover { background: #475569; color: #e2e8f0; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .presets { margin-top: 16px; }
+        .presets span { color: #64748b; font-size: 13px; }
+        .preset-btn {
+            padding: 6px 14px; margin: 4px; background: #1e293b; border: 1px solid #334155;
+            border-radius: 6px; color: #94a3b8; font-size: 13px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .preset-btn:hover { border-color: #a78bfa; color: #a78bfa; }
+        .back-link {
+            position: fixed; top: 20px; left: 20px; color: #64748b; text-decoration: none;
+            font-size: 14px; transition: color 0.2s;
+        }
+        .back-link:hover { color: #a78bfa; }
+        .status-text { font-size: 14px; color: #64748b; margin-top: 8px; min-height: 20px; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; Back to Toolkit</a>
+    <div class="timer-container">
+        <h1>Class Timer</h1>
+        <p class="subtitle">Countdown timer for classroom activities</p>
+
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="modeActivity" onclick="setMode('activity')">Activity</button>
+            <button class="mode-btn" id="modeBreak" onclick="setMode('break')">Break</button>
+        </div>
+
+        <div class="time-input-group">
+            <label for="minutes">Minutes:</label>
+            <input type="number" id="minutes" value="10" min="1" max="180" step="1">
+        </div>
+
+        <div class="display" id="display">10:00</div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-start" id="startBtn" onclick="startTimer()">Start</button>
+            <button class="btn btn-stop" id="stopBtn" onclick="stopTimer()" disabled>Stop</button>
+            <button class="btn btn-reset" id="resetBtn" onclick="resetTimer()">Reset</button>
+        </div>
+
+        <div class="presets">
+            <span>Quick set: </span>
+            <button class="preset-btn" onclick="setPreset(1)">1 min</button>
+            <button class="preset-btn" onclick="setPreset(5)">5 min</button>
+            <button class="preset-btn" onclick="setPreset(10)">10 min</button>
+            <button class="preset-btn" onclick="setPreset(15)">15 min</button>
+            <button class="preset-btn" onclick="setPreset(25)">25 min</button>
+            <button class="preset-btn" onclick="setPreset(45)">45 min</button>
+        </div>
+
+        <div class="status-text" id="statusText"></div>
+    </div>
+
+    <script>
+        let timerInterval = null;
+        let totalSeconds = 600;
+        let remainingSeconds = 600;
+        let isRunning = false;
+        let currentMode = 'activity';
+        let audioCtx = null;
+
+        const display = document.getElementById('display');
+        const progressBar = document.getElementById('progressBar');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const minutesInput = document.getElementById('minutes');
+        const statusText = document.getElementById('statusText');
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeActivity').classList.toggle('active', mode === 'activity');
+            document.getElementById('modeBreak').classList.toggle('active', mode === 'break');
+            if (mode === 'break') {
+                minutesInput.value = 5;
+            } else {
+                minutesInput.value = 10;
+            }
+            resetTimer();
+        }
+
+        function setPreset(mins) {
+            minutesInput.value = mins;
+            resetTimer();
+        }
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        }
+
+        function updateDisplay() {
+            display.textContent = formatTime(remainingSeconds);
+            const pct = (remainingSeconds / totalSeconds) * 100;
+            progressBar.style.width = pct + '%';
+
+            // Color states
+            display.classList.remove('warning', 'danger');
+            progressBar.classList.remove('warning', 'danger');
+            if (remainingSeconds <= 10 && remainingSeconds > 0) {
+                display.classList.add('danger');
+                progressBar.classList.add('danger');
+            } else if (remainingSeconds <= 60 && remainingSeconds > 10) {
+                display.classList.add('warning');
+                progressBar.classList.add('warning');
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            if (!timerInterval) {
+                totalSeconds = parseInt(minutesInput.value) * 60;
+                remainingSeconds = totalSeconds;
+            }
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            minutesInput.disabled = true;
+            statusText.textContent = currentMode === 'break' ? 'Break in progress...' : 'Timer running...';
+
+            timerInterval = setInterval(function() {
+                remainingSeconds--;
+                updateDisplay();
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    isRunning = false;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    minutesInput.disabled = false;
+                    statusText.textContent = 'Time is up!';
+                    playAlarm();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (!isRunning) return;
+            clearInterval(timerInterval);
+            isRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            statusText.textContent = 'Timer paused at ' + formatTime(remainingSeconds);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            totalSeconds = parseInt(minutesInput.value) * 60;
+            remainingSeconds = totalSeconds;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            minutesInput.disabled = false;
+            statusText.textContent = '';
+            display.classList.remove('warning', 'danger');
+            progressBar.classList.remove('warning', 'danger');
+            updateDisplay();
+        }
+
+        function playAlarm() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                // Play 3 beeps
+                for (let i = 0; i < 3; i++) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.value = 880;
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime + i * 0.4);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.4 + 0.3);
+                    osc.start(audioCtx.currentTime + i * 0.4);
+                    osc.stop(audioCtx.currentTime + i * 0.4 + 0.3);
+                }
+            } catch (e) {
+                console.log('Audio not available');
+            }
+        }
+
+        minutesInput.addEventListener('change', function() {
+            if (!isRunning && !timerInterval) {
+                resetTimer();
+            }
+        });
+
+        // Initialize
+        updateDisplay();
+    </script>
+</body>
+</html>

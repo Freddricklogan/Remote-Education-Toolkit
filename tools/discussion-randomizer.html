@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion Randomizer - Remote Education Toolkit</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff; padding: 24px 32px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 22px; font-weight: 700; }
+        .header a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; }
+        .header a:hover { color: #fff; }
+        .main { max-width: 800px; margin: 0 auto; padding: 24px; }
+        .panel {
+            background: #fff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .panel h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #667eea; }
+        .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .input-row input {
+            flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0;
+            border-radius: 8px; font-size: 14px; outline: none;
+        }
+        .input-row input:focus { border-color: #667eea; }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: #667eea; color: #fff; }
+        .btn-primary:hover { background: #5a67d8; }
+        .btn-secondary { background: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger { background: #fee2e2; color: #ef4444; }
+        .btn-danger:hover { background: #fecaca; }
+        .btn-success { background: #22c55e; color: #fff; }
+        .btn-success:hover { background: #16a34a; }
+        .student-tags {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; min-height: 32px;
+        }
+        .student-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #f1f5f9; padding: 6px 12px; border-radius: 20px;
+            font-size: 13px; font-weight: 500; color: #475569;
+        }
+        .student-tag.picked { background: #e0e7ff; color: #667eea; text-decoration: line-through; opacity: 0.5; }
+        .student-tag .remove {
+            cursor: pointer; font-size: 16px; color: #94a3b8; line-height: 1;
+        }
+        .student-tag .remove:hover { color: #ef4444; }
+
+        /* Randomizer Display */
+        .picker-display {
+            text-align: center; padding: 40px 20px; margin: 16px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px; color: #fff; min-height: 160px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .picker-display .picked-name {
+            font-size: 48px; font-weight: 800; margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .picker-display .picked-label { font-size: 14px; opacity: 0.8; }
+        .picker-display.animating .picked-name {
+            animation: shuffle 0.1s infinite;
+        }
+        @keyframes shuffle {
+            0% { transform: translateY(-2px); }
+            50% { transform: translateY(2px); }
+            100% { transform: translateY(-2px); }
+        }
+
+        .picker-controls {
+            display: flex; gap: 12px; justify-content: center; margin: 16px 0;
+            flex-wrap: wrap; align-items: center;
+        }
+        .checkbox-label {
+            display: flex; align-items: center; gap: 6px; font-size: 14px; color: #64748b;
+            cursor: pointer;
+        }
+        .checkbox-label input { width: 16px; height: 16px; cursor: pointer; }
+
+        /* Group Generator */
+        .group-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+        .group-controls label { font-size: 14px; color: #64748b; }
+        .group-controls input[type="number"] {
+            width: 70px; padding: 8px 10px; border: 2px solid #e2e8f0;
+            border-radius: 8px; font-size: 14px; text-align: center; outline: none;
+        }
+        .group-controls input[type="number"]:focus { border-color: #667eea; }
+        .groups-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .group-card {
+            background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 16px;
+        }
+        .group-card h4 {
+            font-size: 13px; font-weight: 700; color: #667eea;
+            margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .group-card ul { list-style: none; }
+        .group-card li { padding: 4px 0; font-size: 14px; color: #475569; }
+        .count-badge {
+            display: inline-block; background: #667eea; color: #fff; font-size: 12px;
+            padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Discussion Randomizer</h1>
+        <a href="../index.html">&larr; Back to Toolkit</a>
+    </div>
+
+    <div class="main">
+        <!-- Student Roster -->
+        <div class="panel">
+            <h2>Student Roster <span class="count-badge" id="rosterCount">0</span></h2>
+            <div class="input-row">
+                <input type="text" id="nameInput" placeholder="Enter student name..." onkeydown="if(event.key==='Enter')addName()">
+                <button class="btn btn-primary" onclick="addName()">Add</button>
+                <button class="btn btn-danger" onclick="clearNames()">Clear All</button>
+            </div>
+            <div class="input-row">
+                <input type="text" id="bulkInput" placeholder="Add multiple names (comma separated)..." onkeydown="if(event.key==='Enter')addBulk()">
+                <button class="btn btn-secondary" onclick="addBulk()">Add All</button>
+            </div>
+            <div class="student-tags" id="studentTags"></div>
+        </div>
+
+        <!-- Random Picker -->
+        <div class="panel">
+            <h2>Random Student Picker</h2>
+            <div class="picker-display" id="pickerDisplay">
+                <div class="picked-name" id="pickedName">?</div>
+                <div class="picked-label" id="pickedLabel">Click the button to pick a student</div>
+            </div>
+            <div class="picker-controls">
+                <button class="btn btn-success" onclick="pickRandom()" id="pickBtn" style="font-size: 16px; padding: 14px 36px;">Pick Random Student</button>
+                <button class="btn btn-secondary" onclick="resetPicks()">Reset Picks</button>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="avoidRepeats" checked>
+                    Avoid repeats until all picked
+                </label>
+            </div>
+        </div>
+
+        <!-- Group Generator -->
+        <div class="panel">
+            <h2>Group Generator</h2>
+            <div class="group-controls">
+                <label for="groupSize">Students per group:</label>
+                <input type="number" id="groupSize" value="3" min="2" max="10">
+                <button class="btn btn-primary" onclick="generateGroups()">Generate Groups</button>
+            </div>
+            <div class="groups-container" id="groupsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let pickedStudents = [];
+        let isAnimating = false;
+
+        // Load from localStorage
+        const saved = localStorage.getItem('randomizer_students');
+        if (saved) students = JSON.parse(saved);
+
+        function saveStudents() {
+            localStorage.setItem('randomizer_students', JSON.stringify(students));
+        }
+
+        function addName() {
+            const input = document.getElementById('nameInput');
+            const name = input.value.trim();
+            if (!name) return;
+            if (students.includes(name)) {
+                alert('"' + name + '" is already in the roster.');
+                return;
+            }
+            students.push(name);
+            saveStudents();
+            input.value = '';
+            input.focus();
+            renderTags();
+        }
+
+        function addBulk() {
+            const input = document.getElementById('bulkInput');
+            const names = input.value.split(',').map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0; });
+            let added = 0;
+            names.forEach(function(name) {
+                if (!students.includes(name)) {
+                    students.push(name);
+                    added++;
+                }
+            });
+            saveStudents();
+            input.value = '';
+            renderTags();
+            if (added > 0) {
+                alert('Added ' + added + ' student(s) to the roster.');
+            }
+        }
+
+        function removeName(name) {
+            students = students.filter(function(s) { return s !== name; });
+            pickedStudents = pickedStudents.filter(function(s) { return s !== name; });
+            saveStudents();
+            renderTags();
+        }
+
+        function clearNames() {
+            if (students.length === 0) return;
+            if (!confirm('Remove all students from the roster?')) return;
+            students = [];
+            pickedStudents = [];
+            saveStudents();
+            renderTags();
+            document.getElementById('groupsContainer').innerHTML = '';
+        }
+
+        function renderTags() {
+            const container = document.getElementById('studentTags');
+            document.getElementById('rosterCount').textContent = students.length;
+
+            if (students.length === 0) {
+                container.innerHTML = '<span style="color:#94a3b8;font-size:13px;">No students added yet</span>';
+                return;
+            }
+
+            container.innerHTML = students.map(function(name) {
+                const isPicked = pickedStudents.includes(name);
+                return '<span class="student-tag' + (isPicked ? ' picked' : '') + '">' +
+                    name +
+                    '<span class="remove" onclick="removeName(\'' + name.replace(/'/g, "\\'") + '\')">&times;</span>' +
+                    '</span>';
+            }).join('');
+        }
+
+        function pickRandom() {
+            if (students.length === 0) {
+                alert('Add some students first!');
+                return;
+            }
+            if (isAnimating) return;
+
+            const avoidRepeats = document.getElementById('avoidRepeats').checked;
+            let available = students;
+
+            if (avoidRepeats) {
+                available = students.filter(function(s) { return !pickedStudents.includes(s); });
+                if (available.length === 0) {
+                    pickedStudents = [];
+                    available = students.slice();
+                    renderTags();
+                }
+            }
+
+            // Animation
+            isAnimating = true;
+            const display = document.getElementById('pickerDisplay');
+            const nameEl = document.getElementById('pickedName');
+            const labelEl = document.getElementById('pickedLabel');
+            display.classList.add('animating');
+            labelEl.textContent = 'Selecting...';
+
+            let count = 0;
+            const maxCount = 20;
+            const interval = setInterval(function() {
+                const randomIdx = Math.floor(Math.random() * students.length);
+                nameEl.textContent = students[randomIdx];
+                count++;
+                if (count >= maxCount) {
+                    clearInterval(interval);
+                    // Final pick
+                    const picked = available[Math.floor(Math.random() * available.length)];
+                    nameEl.textContent = picked;
+                    display.classList.remove('animating');
+                    labelEl.textContent = 'Selected student!';
+                    isAnimating = false;
+
+                    if (avoidRepeats) {
+                        pickedStudents.push(picked);
+                        const remaining = students.length - pickedStudents.length;
+                        labelEl.textContent = 'Selected! (' + remaining + ' remaining)';
+                        renderTags();
+                    }
+                }
+            }, 80);
+        }
+
+        function resetPicks() {
+            pickedStudents = [];
+            document.getElementById('pickedName').textContent = '?';
+            document.getElementById('pickedLabel').textContent = 'Click the button to pick a student';
+            renderTags();
+        }
+
+        function generateGroups() {
+            if (students.length === 0) {
+                alert('Add some students first!');
+                return;
+            }
+
+            const groupSize = parseInt(document.getElementById('groupSize').value) || 3;
+            const shuffled = students.slice().sort(function() { return Math.random() - 0.5; });
+            const groups = [];
+            let groupNum = 1;
+
+            for (let i = 0; i < shuffled.length; i += groupSize) {
+                groups.push({
+                    name: 'Group ' + groupNum,
+                    members: shuffled.slice(i, i + groupSize)
+                });
+                groupNum++;
+            }
+
+            // If the last group is too small (1 person), distribute them
+            if (groups.length > 1 && groups[groups.length - 1].members.length === 1) {
+                const loner = groups.pop().members[0];
+                groups[groups.length - 1].members.push(loner);
+            }
+
+            const container = document.getElementById('groupsContainer');
+            container.innerHTML = groups.map(function(group) {
+                return '<div class="group-card">' +
+                    '<h4>' + group.name + ' (' + group.members.length + ')</h4>' +
+                    '<ul>' + group.members.map(function(m) { return '<li>' + m + '</li>'; }).join('') + '</ul>' +
+                    '</div>';
+            }).join('');
+        }
+
+        // Initialize
+        renderTags();
+    </script>
+</body>
+</html>
