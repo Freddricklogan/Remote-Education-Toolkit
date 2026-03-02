@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Education Toolkit</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1a1a2e;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+        header { text-align: center; color: #fff; margin-bottom: 48px; }
+        header h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+        header p { font-size: 18px; opacity: 0.9; max-width: 500px; margin: 0 auto; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .tool-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 36px 28px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .tool-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+        .tool-icon { font-size: 48px; margin-bottom: 16px; }
+        .tool-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+        .tool-card p { font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px; }
+        .tool-card a {
+            display: inline-block; padding: 12px 32px; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;
+            transition: opacity 0.2s;
+        }
+        .tool-card a:hover { opacity: 0.9; }
+        footer { text-align: center; color: rgba(255,255,255,0.7); margin-top: 48px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Remote Education Toolkit</h1>
+            <p>Practical browser-based tools for managing remote and hybrid classrooms. No installation required.</p>
+        </header>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-icon">&#9200;</div>
+                <h2>Class Timer</h2>
+                <p>Countdown timer with progress bar and audio alerts. Perfect for timed activities, presentations, and breaks.</p>
+                <a href="tools/class-timer.html">Open Timer</a>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">&#128203;</div>
+                <h2>Attendance Tracker</h2>
+                <p>Track student attendance with persistent records. Mark present, absent, or late. Export data to CSV.</p>
+                <a href="tools/attendance-tracker.html">Open Tracker</a>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">&#127922;</div>
+                <h2>Discussion Randomizer</h2>
+                <p>Randomly select students for participation. Generate groups of any size. Ensure everyone gets a turn.</p>
+                <a href="tools/discussion-randomizer.html">Open Randomizer</a>
+            </div>
+        </div>
+        <footer>
+            <p>Remote Education Toolkit &mdash; All tools run locally in your browser. No data is sent to any server.</p>
+        </footer>
+    </div>
+</body>
+</html>
