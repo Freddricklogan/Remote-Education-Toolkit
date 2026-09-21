@@ -1,87 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remote Education Toolkit</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #1a1a2e;
-        }
-        .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
-        header { text-align: center; color: #fff; margin-bottom: 48px; }
-        header h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
-        header p { font-size: 18px; opacity: 0.9; max-width: 500px; margin: 0 auto; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .tool-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 36px 28px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .tool-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
-        .tool-icon { font-size: 48px; margin-bottom: 16px; }
-        .tool-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
-        .tool-card p { font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px; }
-        .tool-card a {
-            display: inline-block; padding: 12px 32px; background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;
-            transition: opacity 0.2s;
-        }
-        .tool-card a:hover { opacity: 0.9; }
-        footer { text-align: center; color: rgba(255,255,255,0.7); margin-top: 48px; font-size: 14px; }
-    </style>
-<link rel="canonical" href="https://freddricklogan.github.io/remote-education-toolkit/">
-<meta name="robots" content="index, follow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="author" content="Freddrick Logan">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Freddrick Logan">
-<meta property="og:title" content="Remote Education Toolkit">
-<meta property="og:description" content="Remote Education Toolkit">
-<meta property="og:url" content="https://freddricklogan.github.io/remote-education-toolkit/">
-<meta property="og:image" content="https://images.unsplash.com/photo-1649406458887-2b6561c36a4d?auto=format&fit=crop&w=1200&h=630&q=80">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Remote Education Toolkit">
-<meta name="twitter:description" content="Remote Education Toolkit">
-<meta name="twitter:image" content="https://images.unsplash.com/photo-1649406458887-2b6561c36a4d?auto=format&fit=crop&w=1200&h=630&q=80">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Remote Education Toolkit","description":"Remote Education Toolkit","url":"https://freddricklogan.github.io/remote-education-toolkit/","image":"https://images.unsplash.com/photo-1649406458887-2b6561c36a4d?auto=format&fit=crop&w=1200&h=630&q=80","applicationCategory":"WebApplication","operatingSystem":"Any (Web)","author":{"@type":"Person","name":"Freddrick Logan","url":"https://fredlogan.phd"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b1220'/%3E%3Ccircle cx='16' cy='17' r='9' fill='none' stroke='%2358a6ff' stroke-width='2'/%3E%3Cpath d='M16 11v6l4 2' stroke='%233fb950' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap">
+<title>Remote Education Toolkit — timer, attendance, randomizer</title>
+<meta name="description" content="Three browser-based classroom tools with tested logic: an agenda timer that cannot drift, an attendance tracker with rates, alerts and CSV round-trip, and a fair cold-call and grouping randomizer. No server; data stays in your browser. By Freddrick Logan.">
+<link rel="canonical" href="https://freddricklogan.github.io/Remote-Education-Toolkit/">
+<link rel="stylesheet" href="src/exec-shell.css">
+<link rel="stylesheet" href="src/app.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Remote Education Toolkit</h1>
-            <p>Practical browser-based tools for managing remote and hybrid classrooms. No installation required.</p>
-        </header>
-        <div class="tools-grid">
-            <div class="tool-card">
-                <div class="tool-icon">&#9200;</div>
-                <h2>Class Timer</h2>
-                <p>Countdown timer with progress bar and audio alerts. Perfect for timed activities, presentations, and breaks.</p>
-                <a href="tools/class-timer.html">Open Timer</a>
-            </div>
-            <div class="tool-card">
-                <div class="tool-icon">&#128203;</div>
-                <h2>Attendance Tracker</h2>
-                <p>Track student attendance with persistent records. Mark present, absent, or late. Export data to CSV.</p>
-                <a href="tools/attendance-tracker.html">Open Tracker</a>
-            </div>
-            <div class="tool-card">
-                <div class="tool-icon">&#127922;</div>
-                <h2>Discussion Randomizer</h2>
-                <p>Randomly select students for participation. Generate groups of any size. Ensure everyone gets a turn.</p>
-                <a href="tools/discussion-randomizer.html">Open Randomizer</a>
-            </div>
-        </div>
-        <footer>
-            <p>Remote Education Toolkit &mdash; All tools run locally in your browser. No data is sent to any server.</p>
-        </footer>
-    </div>
-<a id="view-src" href="https://github.com/Freddricklogan/remote-education-toolkit" target="_blank" rel="noopener" title="View source on GitHub" style="position:fixed;right:14px;bottom:14px;z-index:99999;font:600 12px/1 -apple-system,system-ui,sans-serif;color:#f4f3ef;background:#14213d;border:1px solid #c9a44e;border-radius:999px;padding:10px 15px;text-decoration:none;box-shadow:0 3px 16px rgba(0,0,0,.3)">&#9654; View Source</a>
+<main id="demo-root" class="exec-main">
+  <div class="tabs" role="tablist" aria-label="Tools">
+    <button type="button" role="tab" data-tab="timer" aria-selected="true" aria-controls="panel-timer" id="tab-timer">Class Timer</button>
+    <button type="button" role="tab" data-tab="attendance" aria-selected="false" aria-controls="panel-attendance" id="tab-attendance">Attendance Tracker</button>
+    <button type="button" role="tab" data-tab="randomizer" aria-selected="false" aria-controls="panel-randomizer" id="tab-randomizer">Discussion Randomizer</button>
+  </div>
+  <section class="panel" id="panel-timer" role="tabpanel" aria-labelledby="tab-timer"></section>
+  <section class="panel" id="panel-attendance" role="tabpanel" aria-labelledby="tab-attendance" hidden></section>
+  <section class="panel" id="panel-randomizer" role="tabpanel" aria-labelledby="tab-randomizer" hidden></section>
+  <p class="method">Each tool also has its own page: <a href="tools/class-timer.html">Class Timer</a> · <a href="tools/attendance-tracker.html">Attendance Tracker</a> · <a href="tools/discussion-randomizer.html">Discussion Randomizer</a>. Guidance: <a href="https://github.com/Freddricklogan/Remote-Education-Toolkit/blob/main/docs/remote-teaching-best-practices.md">Remote teaching best practices</a>.</p>
+</main>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>
