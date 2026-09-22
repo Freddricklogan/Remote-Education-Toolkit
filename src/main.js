@@ -33,6 +33,8 @@ if (single) {
 window.__tools = mounted;
 
 const shell = mountExecShell({
+  theme: 'ember',
+  accent: 'secondary',
   title: single ? TOOLS[single].title : 'Remote Education Toolkit',
   tagline: single ? TOOLS[single].blurb : 'Three classroom tools with tested logic and no server: an agenda timer that cannot drift, an attendance tracker with rates, alerts and CSV round-trip, and a randomizer whose cold calls are fair and whose groups avoid repeated pairs. Everything stays in your browser.',
   repo: 'https://github.com/Freddricklogan/Remote-Education-Toolkit',
